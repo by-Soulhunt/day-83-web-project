@@ -28,5 +28,23 @@ def resume():
     return render_template("resume.html")
 
 
+@app.route("/projects")
+def projects():
+    """
+    Projects page
+    :return: template projects.html
+    """
+    return render_template("projects.html")
+
+
+@app.route("/contact")
+def contact():
+    """
+    Contact page
+    :return: template contact.html
+    """
+    return render_template("contact.html")
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5003)

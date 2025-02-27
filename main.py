@@ -12,8 +12,20 @@ Bootstrap(app)
 # Routs
 @app.route("/")
 def index():
-    """Main page"""
+    """
+    Main page
+    :return: template index.html
+    """
     return render_template("index.html")
+
+
+@app.route("/resume")
+def resume():
+    """
+    Resume page
+    :return: template resume.html
+    """
+    return render_template("resume.html")
 
 
 if __name__ == '__main__':

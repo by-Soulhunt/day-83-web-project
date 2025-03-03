@@ -3,6 +3,9 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text, ForeignKey
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import DataRequired, Email, Length, Regexp
 import datetime
 import os
 
@@ -81,6 +84,15 @@ class Language(db.Model):
 
 with app.app_context():
     db.create_all()
+
+
+# Create contact form
+class ContactForm(FlaskForm):
+    name = StringField("Full Name", validators=[DataRequired(), Length(min=2, max=100)])
+    email = StringField("Email", validators=[DataRequired(), Email(), Length(min=5, max=20)])
+    phone = StringField("Phone", validators=[DataRequired(),Length(min=10, max=20), Regexp(regex='^[+-]?[0-9]$')])
+    message = StringField("Message", validators=[DataRequired])
+    submit = SubmitField("Send")
 
 
 def group_data_for_template(object_list):

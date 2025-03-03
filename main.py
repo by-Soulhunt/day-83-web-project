@@ -83,6 +83,20 @@ with app.app_context():
     db.create_all()
 
 
+def group_data_for_template(object_list):
+    """
+    Group skills by 3 elements into nested list
+    :param object_list:
+    :return:  grouped_list, nested list with grouped objects by 3 elements
+    """
+    grouped_list = []
+    for i in range(0, len(object_list), 3):
+        # Create a group of 3 elements (or less if there is a remainder)
+        grouped_list.append(object_list[i:i + 3])
+
+    return grouped_list
+
+
 # Routs
 @app.route("/")
 def index():
@@ -99,16 +113,42 @@ def resume():
     Resume page
     :return: template resume.html
     """
-    return render_template("resume.html")
+    # Experience data
+    experience = db.session.execute(db.Select(Experience))
+    all_experience = experience.scalars().all()
+
+    # Education data
+    education = db.session.execute(db.Select(Education))
+    all_education = education.scalars().all()
+
+    # Skills data
+    skills = db.session.execute(db.Select(Skills))
+    all_skills = skills.scalars().all()
+    grouped_list = group_data_for_template(all_skills)
+
+    # Languages data
+    languages = db.session.execute(db.Select(Language))
+    languages = languages.scalars().all()
+    all_languages = group_data_for_template(languages)
+
+    return render_template("resume.html",
+                           all_experience=all_experience,
+                           all_education=all_education,
+                           all_skills=all_skills,
+                           all_languages=all_languages,
+                           grouped_list=grouped_list
+                           )
 
 
 @app.route("/projects")
 def projects():
     """
-    Projects page
-    :return: template projects.html
+    Takes projects data from DataBase and show in template
+    :return: projects.html
     """
-    return render_template("projects.html")
+    result = db.session.execute(db.Select(Projects))
+    all_projects = result.scalars().all()
+    return render_template("projects.html", all_projects=all_projects)
 
 
 @app.route("/contact")

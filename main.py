@@ -5,7 +5,8 @@ from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text, ForeignKey
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, Regexp
+from wtforms.validators import DataRequired, Email, Length, Regexp, InputRequired
+import email_validator
 import datetime
 import os
 
@@ -88,10 +89,17 @@ with app.app_context():
 
 # Create contact form
 class ContactForm(FlaskForm):
-    name = StringField("Full Name", validators=[DataRequired(), Length(min=2, max=100)])
-    email = StringField("Email", validators=[DataRequired(), Email(), Length(min=5, max=20)])
-    phone = StringField("Phone", validators=[DataRequired(),Length(min=10, max=20), Regexp(regex='^[+-]?[0-9]$')])
-    message = StringField("Message", validators=[DataRequired()])
+    name = StringField("Full Name", validators=[DataRequired(),
+                                                Length(min=2, max=100),
+                                                InputRequired()])
+    email = StringField("Email", validators=[DataRequired(),
+                                             Email(),
+                                             InputRequired()])
+    phone = StringField("Phone", validators=[DataRequired(),
+                                             Length(min=10, max=20),
+                                             Regexp(regex='^[+-]?[0-9]++$', message="Use numbers"),
+                                             InputRequired()])
+    message = StringField("Message", validators=[DataRequired(), InputRequired()])
     submit = SubmitField("Send")
 
 
@@ -170,13 +178,13 @@ def contact():
     :return: template contact.html
     """
     form = ContactForm()
-    if request.method == "POST":
+    if form.validate_on_submit():
         name = request.form.get("name")
         email = request.form.get("email")
         phone = request.form.get("phone")
         message = request.form.get("message")
         print(name, email, phone, message)
-        return redirect("index.html")
+        return render_template("contact.html", form=form, msg_sent=True)
     return render_template("contact.html", form=form)
 
 

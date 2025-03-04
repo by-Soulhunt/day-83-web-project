@@ -12,9 +12,17 @@
                 <p class="lead fw-normal text-muted mb-0">Let's work together!</p>
             </div>
             <div class="row gx-5 justify-content-center">
-                <div class="col-lg-8 col-xl-6">
+                <div class="col-lg-8 col-xl-6" >
                     {{ render_form(form, novalidate=True, button_map={"submit": "primary"}) }}
                 </div>
+                {% if msg_sent %}
+                <div class="alert alert-success" role="alert">
+                  <h4 class="alert-heading">Message sent!</h4>
+                    <p>Aww yeah, you successfully sent your message. I really appreciate the feedback and will get back to you as soon as possible.</p>
+                    <hr>
+                  <p class="mb-0">Sincerely, Andrii Bychuk.</p>
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

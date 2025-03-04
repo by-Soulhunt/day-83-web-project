@@ -1,5 +1,5 @@
+from flask_bootstrap import Bootstrap5
 from flask import Flask, abort, render_template, redirect, url_for, flash, request
-from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship, DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text, ForeignKey
@@ -13,7 +13,7 @@ import os
 # Flask configuration
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("FLASK_KEY")
-Bootstrap(app)
+Bootstrap5(app)
 
 
 # Create DataBase
@@ -91,7 +91,7 @@ class ContactForm(FlaskForm):
     name = StringField("Full Name", validators=[DataRequired(), Length(min=2, max=100)])
     email = StringField("Email", validators=[DataRequired(), Email(), Length(min=5, max=20)])
     phone = StringField("Phone", validators=[DataRequired(),Length(min=10, max=20), Regexp(regex='^[+-]?[0-9]$')])
-    message = StringField("Message", validators=[DataRequired])
+    message = StringField("Message", validators=[DataRequired()])
     submit = SubmitField("Send")
 
 
@@ -163,13 +163,21 @@ def projects():
     return render_template("projects.html", all_projects=all_projects)
 
 
-@app.route("/contact")
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
     """
     Contact page
     :return: template contact.html
     """
-    return render_template("contact.html")
+    form = ContactForm()
+    if request.method == "POST":
+        name = request.form.get("name")
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+        message = request.form.get("message")
+        print(name, email, phone, message)
+        return redirect("index.html")
+    return render_template("contact.html", form=form)
 
 
 @app.context_processor
